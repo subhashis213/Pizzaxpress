@@ -4,11 +4,12 @@ const app = express()
 const ejs = require('ejs')
 const path = require('path')
 const expressLayout = require('express-ejs-layouts')
-const PORT = process.env.PORT || 3300
+const PORT = process.env.PORT || 3000
 const mongoose = require('mongoose')
 const session = require('express-session')
 const flash = require('express-flash')
-//const MongoDbStore = require('connect-mongo')(session)
+const MongoDbStore = require('connect-mongo')
+
 const passport = require('passport')
 const Emitter = require('events')
 
@@ -36,7 +37,9 @@ app.set('eventEmitter', eventEmitter)
 app.use(session({
     secret: process.env.COOKIE_SECRET,
     resave: false,
-    //store: mongoStore,
+    store: MongoDbStore.create({
+       client:connection.getClient()
+    }),
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 hour
 }))
@@ -66,7 +69,7 @@ app.set('view engine', 'ejs')
 
 require('./routes/web')(app)
 app.use((req, res) => {
-    res.status(404).render('errors/404')
+    res.status(404).render('<h1>404, page not found</h1>')
 })
 
 const server = app.listen(PORT , () => {

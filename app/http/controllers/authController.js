@@ -77,8 +77,15 @@ function authController() {
          })
         },
         logout(req, res) {
-          req.logout()
+          //req.logout()
+          req.session.destroy((err) => {
+            if (err) {
+              console.error('Error while destroying session:', err);
+              return res.status(500).send('Internal Server Error');
+            }
+        
           return res.redirect('/login')  
+        })
         }
     }
 }
